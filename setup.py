@@ -29,5 +29,6 @@ setup(
     ],
     install_requires=[
         'Django>=1.4',
+        '-e git+https://github.com/ExactTarget/FuelSDK-Python.git#egg=FuelSDK-Python',
     ],
 )
