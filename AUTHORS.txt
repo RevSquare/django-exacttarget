@@ -1,0 +1,3 @@
+The primary author of django_exacttarget is Daniel Kalinowski
+
+email: fido@piasta.pl
