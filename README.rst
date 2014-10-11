@@ -42,7 +42,7 @@ The you will need to declare the loaders you want to add in your settings.py fil
 
 .. code-block::  python
 
-    EMAIL_BACKEND = 'exacttarget_mail.backend.EmailBackend'
+    EMAIL_BACKEND = 'django_exacttarget.backend.EmailBackend'
     FUELSDK_APP_SIGNATURE = YOUR_EXACTTARGET_APP_SIGNATURE
     FUELSDK_CLIENT_ID = YOUR_EXACTTARGET_CLIENT_ID
     FUELSDK_CLIENT_SECRET = YOUR_EXACTTARGET_CLIENT_SECRET
