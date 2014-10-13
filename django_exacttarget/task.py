@@ -5,5 +5,5 @@ from .service import ExactTargetService
 
 
 @shared_task
-def send_mail(email_message):
-    ExactTargetService.send_email(email_message.recipients(), email_message)
+def send_mail(recipients, email_message):
+    ExactTargetService.send_email(recipients, email_message)
