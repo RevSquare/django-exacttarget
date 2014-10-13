@@ -26,7 +26,7 @@ class ExactTargetService(object):
         })
 
     @classmethod
-    def get_or_create_subscriber(cls, email):
+    def get_or_create_subscriber(cls, email, email_xml_context=None):
         et_client = cls.get_client()
         et_subscriber = ET_Subscriber()
         et_subscriber.auth_stub = et_client
@@ -37,18 +37,34 @@ class ExactTargetService(object):
             'Value': email
         }
         get_response = et_subscriber.get()
+        attributes = {}
+        if email_xml_context:
+            attributes = {
+                'Attributes': [{'Name': "XML", 'Value': email_xml_context}]
+            }
         if get_response.code == 200 and len(get_response.results) == 0:
             et_subscriber.props = {
                 "SubscriberKey": email,
-                "EmailAddress": email
+                "EmailAddress": email,
             }
+            if attributes:
+                et_subscriber.props.update(attributes)
+            et_subscriber.post()
         elif get_response.code == 200:
             subscriber = get_response.results[0]
+            et_subscriber.props = {
+                "SubscriberKey": email,
+            }
+            patch = False
+            if attributes:
+                et_subscriber.props.update(attributes)
+                patch = True
             if not subscriber.Status != 'Active':
-                et_subscriber.props = {
-                    "SubscriberKey": email,
+                et_subscriber.props.update({
                     "Status": "Active"
-                }
+                })
+                patch = True
+            if patch:
                 et_subscriber.patch()
         return {
             'EmailAddress': email,
@@ -77,13 +93,13 @@ class ExactTargetService(object):
         return et_email.post()
 
     @classmethod
-    def send_email(cls, recipients, message=None, email_id=None, context=None,
-                   fail_silently=True):
+    def send_email(cls, recipients, message=None, email_id=None,
+                   email_xml_context=None, fail_silently=True):
         """
         @param recipients: emails list
         @param message: django EmailMessage instance
         @param email_id: Email ID in Exact Target
-        @param context: dict with the variables to exact target Email object
+        @param email_xml_context: email dynamic content that will be set as subscriber attribute
         """
         if not message and not email_id:
             raise AttributeError(
@@ -123,7 +139,8 @@ class ExactTargetService(object):
 
         subscribers = []
         for email in recipients:
-            subscribers.append(cls.get_or_create_subscriber(email))
+            subscribers.append(cls.get_or_create_subscriber(
+                email, email_xml_context))
         et_sendtrigger.subscribers = subscribers
         response = et_sendtrigger.send()
         if response.code != 200:
