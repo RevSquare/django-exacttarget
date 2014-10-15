@@ -9,7 +9,7 @@ from django.conf import settings
 
 from ..service import ExactTargetService
 try:
-    from ..task import send_mail as celery_send_email_message
+    from ..tasks import send_mail as celery_send_email_message
 except:
     celery_send_email_message = None
 
