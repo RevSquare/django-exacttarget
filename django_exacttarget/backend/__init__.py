@@ -46,7 +46,7 @@ class EmailBackend(BaseEmailBackend):
             email_message = CustomEmailMessage(
                 email_message.subject, email_message.body,
                 getattr(email_message, 'alternatives', None))
-            celery_send_email_message.delay(recipients, email_message)
+            return celery_send_email_message.delay(recipients, email_message)
         else:
             return ExactTargetService.send_email(
                 recipients, email_message)
