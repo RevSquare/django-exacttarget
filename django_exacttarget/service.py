@@ -82,7 +82,7 @@ class ExactTargetService(object):
             'Subject': message.subject,
             'TextBody': message.body
         }
-        if hasattr(message, 'alternatives'):
+        if hasattr(message, 'alternatives') and message.alternatives is not None:
             html_body = filter(
                 lambda item: item[1] == 'text/html',
                 message.alternatives)
@@ -90,6 +90,10 @@ class ExactTargetService(object):
                 et_email.props.update({
                     'HTMLBody': html_body[0][0]
                 })
+        else:
+            et_email.props.update({
+                'HTMLBody': message.body
+            })
         return et_email.post()
 
     @classmethod
