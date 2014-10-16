@@ -14,10 +14,6 @@ except:
     celery_send_email_message = None
 
 
-CustomEmailMessage = namedtuple(
-    'EmailMessage', ['subject', 'body', 'alternatives'])
-
-
 class EmailBackend(BaseEmailBackend):
     """ExactTarget email backend"""
 
@@ -43,9 +39,9 @@ class EmailBackend(BaseEmailBackend):
         """Sends email message"""
         recipients = email_message.recipients()
         if celery_send_email_message:
-            email_message = CustomEmailMessage(
+            email_message = [
                 email_message.subject, email_message.body,
-                getattr(email_message, 'alternatives', None))
+                getattr(email_message, 'alternatives', None)]
             celery_send_email_message.delay(recipients, email_message)
         else:
             return ExactTargetService.send_email(

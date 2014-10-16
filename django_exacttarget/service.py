@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from collections import namedtuple
+import sys
 import uuid
 
 from django.conf import settings
@@ -6,6 +8,10 @@ from django.core.exceptions import ImproperlyConfigured
 
 from FuelSDK import ET_Client
 from FuelSDK.objects import ET_Email, ET_TriggeredSend, ET_Subscriber
+
+
+CustomEmailMessageService = namedtuple(
+    'EmailMessage', ['subject', 'body', 'alternatives'])
 
 
 class ExactTargetService(object):
@@ -76,6 +82,12 @@ class ExactTargetService(object):
         et_email = ET_Email()
         et_email.auth_stub = et_client
         message_uid = uuid.uuid4()
+
+        if isinstance(message, (list, )):
+            message = CustomEmailMessageService(
+                message[0], message[1], message[2]
+            )
+
         et_email.props = {
             'CustomerKey': message_uid,
             'Name': message_uid,
